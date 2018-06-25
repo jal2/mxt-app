@@ -779,7 +779,7 @@ int main (int argc, char *argv[])
 
   } else if (cmd != CMD_FLASH && cmd != CMD_BOOTLOADER_VERSION) {
     ret = mxt_init_chip(ctx, &mxt, &conn);
-    if (ret && cmd != CMD_CRC_CHECK )
+    if (ret && cmd != CMD_CRC_CHECK && cmd != CMD_NONE)
       goto free;
 
     if (mxt)

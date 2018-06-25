@@ -44,6 +44,42 @@
 
 #include "mxt_app.h"
 
+static void convert_config(struct mxt_device *mxt)
+{
+  char infile[255];
+  char outfile[255];
+  struct mxt_device my_mxt;
+
+  if (!mxt) {
+    memset(&my_mxt, 0, sizeof(my_mxt));
+    mxt = &my_mxt;
+    mxt_new(&mxt->ctx);
+  }
+
+  printf("Give input file name (.xcfg or .cfg): ");
+  if (scanf("%255s", infile) != 1) {
+    printf("Input parse error\n");
+    goto ret;
+  }
+
+  printf("Give output file name: ");
+  if (scanf("%255s", infile) != 1) {
+    printf("Input parse error\n");
+    goto ret;
+  }
+
+  if (mxt_convert_config_file(mxt, infile, outfile) == MXT_SUCCESS) {
+    printf("successfully converted\n");
+  } else {
+    printf("#ERR failed to  convert\n");
+  }
+
+ ret:
+  if (mxt == &my_mxt) {
+    free(mxt->ctx);
+  }
+}
+
 //******************************************************************************
 /// \brief Load config from file
 static void load_config(struct mxt_device *mxt)
@@ -248,6 +284,9 @@ static bool mxt_app_command(struct mxt_device *mxt, char selection)
   bool exit_loop = false;
 
   switch(selection) {
+  case '3':
+    convert_config(mxt);
+    break;
   case 'l':
     load_config(mxt);
     break;
@@ -340,6 +379,7 @@ int mxt_menu(struct mxt_device *mxt)
            "Enter C:   (C)alibrate the maxtouch device\n"
            "Enter M:   Display raw (M)essages\n"
            "Enter U:   D(U)mp Diagnostic data\n"
+           "Enter 3:   Convert config file\n"
            "Enter Q:   (Q)uit the application\n");
 
     ret = scanf("%1s", &menu_input);

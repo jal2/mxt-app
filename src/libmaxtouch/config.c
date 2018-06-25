@@ -835,6 +835,29 @@ static int mxt_get_config_from_file(struct libmaxtouch_ctx *ctx,
 }
 
 //******************************************************************************
+/// \brief  convert a config file
+/// \return #mxt_rc
+int mxt_convert_config_file(struct mxt_device *mxt, const char *infilename, const char *outfilename)
+{
+  struct mxt_config cfg = {{0}};
+  int ret = mxt_get_config_from_file(mxt->ctx, infilename, &cfg);
+
+  if (ret == MXT_SUCCESS) {
+
+    char *extension = strrchr(outfilename, '.');
+
+    if (extension && !strcmp(extension, ".xcfg")) {
+      ret = mxt_save_xcfg_file(mxt->ctx, outfilename, &cfg);
+    } else {
+      ret = mxt_save_raw_file(mxt->ctx, outfilename, &cfg);
+    }
+    mxt_free_config(&cfg);
+  }
+
+  return ret;
+}
+
+//******************************************************************************
 /// \brief  Load configuration from .xcfg or RAW file, automatically detect
 //          format and write to device
 /// \return #mxt_rc
